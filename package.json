@@ -1,0 +1,25 @@
+{
+  "name": "perfume-landing-page",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0",
+    "@react-three/fiber": "^9.1.2",
+    "@react-three/drei": "^10.0.0",
+    "three": "^0.175.0",
+    "gsap": "^3.12.7"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.5.2",
+    "vite": "^6.3.5",
+    "tailwindcss": "^4.1.10",
+    "@tailwindcss/vite": "^4.1.10"
+  }
+}
