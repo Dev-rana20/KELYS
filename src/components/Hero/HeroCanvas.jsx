@@ -1,5 +1,6 @@
 import { Suspense, useEffect, useRef } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
+import { ContactShadows } from '@react-three/drei'
 import * as THREE from 'three'
 import gsap from 'gsap'
 
@@ -76,6 +77,18 @@ export default function HeroCanvas({ mousePosition }) {
         <Lights />
         <Bottle mousePosition={mousePosition} />
         <FlowerRibbon mousePosition={mousePosition} />
+
+        {/* Soft grounding shadow — this is what makes the bottle read as
+            "sitting on a surface" instead of floating/pasted onto the bg */}
+        <ContactShadows
+          position={[0, -1.55, 0]}
+          opacity={0.55}
+          scale={8}
+          blur={2.4}
+          far={3}
+          resolution={1024}
+          color="#3a2e4d"
+        />
         <CameraAnimation mousePosition={mousePosition} />
       </Suspense>
     </Canvas>

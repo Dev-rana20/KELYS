@@ -1,58 +1,50 @@
 import { Environment } from '@react-three/drei'
 
 /**
- * Lights.jsx — Luxury product photography lighting.
- * Tuned for glass/crystal perfume bottle with warm key light
- * and soft purple rim for the lavender aesthetic.
+ * Lights.jsx — Neutral, high-contrast studio lighting.
+ * Matches the reference "Henry Hemans" render: one dominant key light,
+ * one gentle fill, no color-tinted rim/underglow washing out the glass.
  */
 export default function Lights() {
   return (
     <>
-      {/* Soft ambient base */}
-      <ambientLight intensity={0.35} color="#f8f4ff" />
+      {/* Soft ambient base — keep low so shadows/highlights stay punchy */}
+      <ambientLight intensity={0.25} color="#ffffff" />
 
-      {/* Key light — warm white from upper-left front */}
+      {/* Key light — the dominant light, casts the contact shadow */}
       <directionalLight
         position={[-3, 6, 6]}
-        intensity={2.2}
-        color="#fff8f0"
-        castShadow={false}
+        intensity={2.6}
+        color="#fff6ea"
+        castShadow
+        shadow-mapSize-width={2048}
+        shadow-mapSize-height={2048}
+        shadow-camera-near={1}
+        shadow-camera-far={15}
+        shadow-camera-left={-4}
+        shadow-camera-right={4}
+        shadow-camera-top={4}
+        shadow-camera-bottom={-4}
+        shadow-bias={-0.0005}
       />
 
-      {/* Fill light — cool from right, softens shadows */}
+      {/* Fill light — neutral, just lifts shadow side, no color cast */}
       <directionalLight
         position={[5, 2, 3]}
-        intensity={1.0}
-        color="#e8eeff"
-      />
-
-      {/* Rim light — purple backlight for glass glow edge */}
-      <pointLight
-        position={[0, 4, -6]}
-        intensity={3.0}
-        color="#9333ea"
-        distance={18}
-        decay={2}
-      />
-
-      {/* Under glow — subtle warm lift */}
-      <pointLight
-        position={[0, -3, 3]}
         intensity={0.6}
-        color="#fde8ff"
-        distance={10}
-        decay={2}
-      />
-
-      {/* Top specular — creates nice glass highlight */}
-      <directionalLight
-        position={[1, 10, 2]}
-        intensity={0.9}
         color="#ffffff"
       />
 
-      {/* HDRI environment — 'city' gives clean glass reflections on product bottles */}
-      <Environment preset="city" />
+      {/* Top specular — creates the bright rim highlight along the glass edge */}
+      <directionalLight
+        position={[1, 10, 2]}
+        intensity={1.1}
+        color="#ffffff"
+      />
+
+      {/* HDRI environment — 'studio' gives the clean, high-contrast reflections
+          you see in product photography; 'city' was giving cool/flat reflections */}
+      <Environment preset="studio" environmentIntensity={1} />
     </>
   )
 }

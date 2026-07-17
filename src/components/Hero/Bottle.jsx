@@ -10,6 +10,7 @@ import * as THREE from 'three'
  * Key fixes:
  * - depthWrite: true on ALL materials so the bottle properly blocks petals
  * - Static Y-axis inner correction to face the camera (was showing as "cross")
+ * - Realistic glass physics patch (ior/thickness/attenuation/clearcoat)
  * - Outer group handles all animations cleanly
  */
 export default function Bottle({ mousePosition }) {
@@ -34,11 +35,30 @@ export default function Bottle({ mousePosition }) {
         child.castShadow = true
         child.receiveShadow = false
         if (child.material) {
+          const mat = child.material
+
           // CRITICAL: depthWrite MUST be true so the bottle occludes petals
           // in the depth buffer — this is what makes petals disappear behind it
-          child.material.depthWrite = true
-          child.material.envMapIntensity = 1.2
-          child.material.needsUpdate = true
+          mat.depthWrite = true
+          mat.envMapIntensity = 1.4
+
+          // ── Fix broken glass physics from the GLB export ──────────────
+          // The source file exports one glass material with ior:0.2, which
+          // is physically impossible (real glass is ~1.45–1.5) and makes
+          // refraction look warped/flat instead of crisp. Also missing
+          // thickness/attenuation, which is what gives glass visible depth.
+          if (mat.transmission > 0) {
+            mat.ior = 1.5
+            mat.thickness = 0.35
+            mat.attenuationDistance = 1.2
+            mat.attenuationColor = new THREE.Color('#ffffff')
+            mat.roughness = Math.max(mat.roughness, 0.03) // pure 0 roughness looks fake/plastic
+            mat.clearcoat = 1
+            mat.clearcoatRoughness = 0.05
+            mat.specularIntensity = 1
+          }
+
+          mat.needsUpdate = true
         }
       }
     })
