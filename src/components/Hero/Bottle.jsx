@@ -10,7 +10,6 @@ import * as THREE from 'three'
  * Key fixes:
  * - depthWrite: true on ALL materials so the bottle properly blocks petals
  * - Static Y-axis inner correction to face the camera (was showing as "cross")
- * - Realistic glass physics patch (ior/thickness/attenuation/clearcoat)
  * - Outer group handles all animations cleanly
  */
 export default function Bottle({ mousePosition }) {
@@ -56,6 +55,25 @@ export default function Bottle({ mousePosition }) {
             mat.clearcoat = 1
             mat.clearcoatRoughness = 0.05
             mat.specularIntensity = 1
+          }
+
+          // ── Fix blurry/glossy label text ───────────────────────────────
+          // The label material was exported with metallicFactor 0.5,
+          // roughnessFactor 0.3 and a normal map — combined with the
+          // envMapIntensity boost above, the studio HDRI creates a strong
+          // specular sheen + normal-map bumping across the text, reading
+          // as "blurry". Give the label its own flatter, sharper treatment.
+          if (mat.name === 'HH - Pack _ Label') {
+            mat.envMapIntensity = 0.3   // barely reflective — no glare washing over text
+            mat.metalness = 0.05
+            mat.roughness = 0.55        // matte paper/print look instead of glossy foil
+            if (mat.normalMap) {
+              mat.normalScale = new THREE.Vector2(0.25, 0.25) // flatten bumping that distorts letters
+            }
+            if (mat.map) {
+              mat.map.anisotropy = 16   // sharper text at grazing angles, prevents mip blur
+              mat.map.needsUpdate = true
+            }
           }
 
           mat.needsUpdate = true

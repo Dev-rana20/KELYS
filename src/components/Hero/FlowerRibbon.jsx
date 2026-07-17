@@ -14,28 +14,35 @@ import * as THREE from 'three'
  */
 
 const MAX_PETALS = 8000
-const EMIT_PER_FRAME = 55
-const LIFE_MIN = 1.8
-const LIFE_MAX = 3.8
-const SPEED_MIN = 0.4
-const SPEED_MAX = 1.9
+const EMIT_PER_FRAME = 90
+const LIFE_MIN = 0.55
+const LIFE_MAX = 1.1
+const SPEED_MIN = 0.5
+const SPEED_MAX = 2.2
 
-// ── Darker purple/violet palette — matches reference image ─────────────────
+// ── Deep violet → pale lilac / near-white — matches reference image range ──
 const PALETTE_DARK = [
-  new THREE.Color('#7c3aed'), // violet-600
+  new THREE.Color('#4c1d95'), // violet-900
+  new THREE.Color('#5b21b6'), // violet-800
   new THREE.Color('#6d28d9'), // violet-700
   new THREE.Color('#7e22ce'), // purple-700
-  new THREE.Color('#6b21a8'), // purple-800
-  new THREE.Color('#5b21b6'), // violet-800
   new THREE.Color('#8b5cf6'), // violet-500
 ]
 
 const PALETTE_LIGHT = [
-  new THREE.Color('#9333ea'), // purple-600
   new THREE.Color('#a855f7'), // purple-500
-  new THREE.Color('#8b5cf6'), // violet-500
-  new THREE.Color('#7c3aed'), // violet-600
-  new THREE.Color('#c084fc'), // purple-400 — accent lighter petals
+  new THREE.Color('#c084fc'), // purple-400
+  new THREE.Color('#d8b4fe'), // purple-300
+  new THREE.Color('#e9d5ff'), // purple-200 — pale lilac
+  new THREE.Color('#f5edff'), // near-white lilac highlight, matches image's light petals
+]
+
+// ── Sparse near-white highlight flecks — the bright glints scattered
+//    through the petal cloud in the reference image ────────────────────────
+const PALETTE_HIGHLIGHT = [
+  new THREE.Color('#ffffff'),
+  new THREE.Color('#f5edff'),
+  new THREE.Color('#ece2ff'),
 ]
 
 // ── Petal shape ────────────────────────────────────────────────────────────
@@ -64,7 +71,7 @@ function buildMaterial(color) {
 }
 
 // ── Single-batch petal system ──────────────────────────────────────────────
-function PetalBatch({ palette, mousePosition, geoScale = 1.0 }) {
+function PetalBatch({ palette, mousePosition, geoScale = 1.0, emitRate = EMIT_PER_FRAME }) {
   const meshRef = useRef()
   const dummy = useMemo(() => new THREE.Object3D(), [])
 
@@ -153,7 +160,7 @@ function PetalBatch({ palette, mousePosition, geoScale = 1.0 }) {
       const worldX = mousePosition.current.x * halfW
       const worldY = mousePosition.current.y * halfH
 
-      const batchEmit = Math.ceil(EMIT_PER_FRAME / 2)
+      const batchEmit = Math.ceil(emitRate / 2)
       for (let e = 0; e < batchEmit; e++) spawnPetal(worldX, worldY)
     }
 
@@ -224,14 +231,16 @@ function PetalBatch({ palette, mousePosition, geoScale = 1.0 }) {
   )
 }
 
-// ── Export: two color-band batches ────────────────────────────────────────────
+// ── Export: three color-band batches ────────────────────────────────────────
 export default function FlowerRibbon({ mousePosition }) {
   return (
     <>
       {/* Deep violet batch — larger petals */}
       <PetalBatch palette={PALETTE_DARK} mousePosition={mousePosition} geoScale={1.2} />
-      {/* Medium purple batch — slightly smaller, layered on top */}
+      {/* Medium purple/lilac batch — slightly smaller, layered on top */}
       <PetalBatch palette={PALETTE_LIGHT} mousePosition={mousePosition} geoScale={0.85} />
+      {/* Sparse near-white highlight flecks — smallest, adds the glint you see in the reference */}
+      <PetalBatch palette={PALETTE_HIGHLIGHT} mousePosition={mousePosition} geoScale={0.6} emitRate={20} />
     </>
   )
 }
