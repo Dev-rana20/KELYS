@@ -409,9 +409,9 @@ const CYCLONE_SPIN = 1
 // Angular speed is derived per-petal from its own orbit radius (tighter
 // orbit = spins faster, like debris pulled close to a vortex core), then
 // clamped into this range (radians/sec).
-const ANGULAR_SPEED_BASE = 0.5
-const ANGULAR_SPEED_MIN = 0.5
-const ANGULAR_SPEED_MAX = 2.0
+const ANGULAR_SPEED_BASE = 0.2
+const ANGULAR_SPEED_MIN = 0.2
+const ANGULAR_SPEED_MAX = 0.7
 
 // How far the vortex center itself is allowed to drift over a petal's life
 // (keeps things from looking perfectly static/mechanical) — small and
